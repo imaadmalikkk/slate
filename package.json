@@ -1,0 +1,10 @@
+{
+  "name": "slate",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "bun run --filter @slate/web dev",
+    "build": "bun run --filter @slate/web build",
+    "lint": "bun run --filter @slate/web lint"
+  }
+}
