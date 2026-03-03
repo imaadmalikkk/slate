@@ -4,6 +4,7 @@ import { JSDOM } from "jsdom";
 import DOMPurify from "dompurify";
 import type { ArticleContent } from "@/lib/types";
 import { isTwitterUrl, extractTwitterContent } from "@/lib/twitter";
+import { isSubstackNoteUrl, extractSubstackNote } from "@/lib/substack";
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,6 +30,18 @@ export async function POST(request: NextRequest) {
       } catch (error) {
         const message =
           error instanceof Error ? error.message : "Failed to extract tweet";
+        return NextResponse.json({ error: message }, { status: 422 });
+      }
+    }
+
+    // Substack Notes: bypass Defuddle and parse ld+json
+    if (isSubstackNoteUrl(parsedUrl.toString())) {
+      try {
+        const article = await extractSubstackNote(parsedUrl.toString());
+        return NextResponse.json(article);
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Failed to extract Substack note";
         return NextResponse.json({ error: message }, { status: 422 });
       }
     }
